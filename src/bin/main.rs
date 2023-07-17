@@ -7,6 +7,9 @@ use std::thread;
 use std::time::Duration;
 use web_demo::ThreadPool;
 
+const SUCCESS_STATUS_LINE: &str = "HTTP/1.1 200 OK\r\n\r\n";
+const FAILURE_STATUS_LINE: &str = "HTTP/1.1 404 NOT FOUND\r\n\r\n";
+
 fn main() {
     let listener = TcpListener::bind("127.0.0.1:7878").unwrap();
 
@@ -43,11 +46,11 @@ fn handle_connection(mut stream: TcpStream) {
 fn get_status_filename(route: &str) -> (&str, &str) {
     match route {
         "/" => ("HTTP/1.1 200 NOT FOUND\r\n\r\n", "index.html"),
-        "/index" => ("HTTP/1.1 200 NOT FOUND\r\n\r\n", "index.html"),
+        "/index" => (SUCCESS_STATUS_LINE, "index.html"),
         "/sleep" => {
             thread::sleep(Duration::from_secs(5));
-            ("HTTP/1.1 200 NOT FOUND\r\n\r\n", "sleep.html")
+            (SUCCESS_STATUS_LINE, "sleep.html")
         }
-        _ => ("HTTP/1.1 404 NOT FOUND\r\n\r\n", "404.html")
+        _ => (FAILURE_STATUS_LINE, "404.html")
     }
 }
